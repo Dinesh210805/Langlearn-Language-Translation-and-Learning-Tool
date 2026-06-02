@@ -1,182 +1,100 @@
-# AI-Powered Language Learning Platform
+# Langlearn
 
-An advanced language learning platform that combines AI technology with interactive learning features to provide a comprehensive language learning experience.
+[![React](https://img.shields.io/badge/React_18-61DAFB?style=flat&logo=react&logoColor=111)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript_5-3178C6?style=flat&logo=typescript&logoColor=fff)](https://www.typescriptlang.org)
+[![Python](https://img.shields.io/badge/Python_3-3776AB?style=flat&logo=python&logoColor=fff)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-000?style=flat&logo=flask&logoColor=fff)](https://flask.palletsprojects.com)
+[![Groq](https://img.shields.io/badge/Groq_LLM-F55036?style=flat)](https://groq.com)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=fff)](https://vitejs.dev)
 
-## 🌟 Key Features
+**Most translation tools stop at the answer. Langlearn explains why it works and gives you something to practise next.**
 
-### 1. Translation Services
+Take any text, voice input, or YouTube video — get back a translation plus grammar breakdown, vocabulary, cultural context, and generated exercises. The learning happens alongside the translation, not separately.
 
-- Advanced Text Translation with context and cultural notes
-- Voice-to-Voice Translation
-- Real-time language detection
-- Cultural context and usage explanations
-- Grammar breakdown and analysis
-- Example generation with contextual usage
-- Support for 30+ languages
+---
 
-### 2. AI Language Tutor Chatbot
+## What it does
 
-- Interactive conversations in target language
-- Real-time grammar corrections
-- Contextual learning
-- Adaptive difficulty levels
-- Multiple teaching styles (casual/formal)
-- Type-writer style responses
-- Quick response suggestions
-- Voice interaction support
-- Progress tracking
+| Feature | Details |
+|---|---|
+| 📝 **Text translation** | Translation + grammar, vocabulary, literal meaning, pronunciation tips, cultural notes |
+| 🎙️ **Voice translation** | Speak → transcribe → translate → learning breakdown, all in one flow |
+| 🤖 **AI tutor** | Conversational practice with contextual follow-up suggestions |
+| 🏋️ **Practice centre** | AI-generated exercises by language, level, and type (fill-blanks, sentence-builder, vocab match, and more) |
+| 📺 **YouTube learning** | Paste a video URL → get captions, summary, vocabulary, grammar patterns, and practice materials |
+| 📊 **Progress tracking** | Achievements and history across all learning activities |
 
-### 3. Practice & Exercises
+Supports **40+ languages** including Spanish, French, German, Japanese, Hindi, Arabic, and more.
 
-- Vocabulary matching games
-- Sentence building exercises
-- Listening comprehension challenges
-- Pronunciation practice
-- Word puzzles
-- Conversation simulations
-- Memory card games
-- Fill-in-the-blanks exercises
-- Progressive difficulty levels
+---
 
-### 4. Learning Resources
+## How it's built
 
-- Interactive lessons
-- Grammar explanations
-- Vocabulary lists
-- Cultural
-  insights
-- Common phrases
-- Pronunciation guides
-- Usage examples
-- Practice dialogues
+**Frontend** — React, TypeScript, Vite, Tailwind CSS, Framer Motion. Browser Speech API handles voice input without any third-party dependency.
 
-### 5. YouTube Integration
+**Backend** — Python, Flask. All AI calls stay server-side; the browser never touches an API key.
 
-- Caption extraction
-- Translation of captions
-- Learning material generation
-- Course summaries
-- Timeline-based learning
-- Multi-language support
+**AI layer** — Groq's inference API with Llama 3.3 70B. Structured JSON prompts enforce a consistent response shape so the UI renders predictably regardless of what the model returns.
 
-### 6. Advanced Features
+**YouTube pipeline** — `youtube_transcript_api` fetches captions, falls back to auto-generated transcripts, and translates when needed. The caption text goes straight into the same AI pipeline used for lessons and exercises.
 
-- Achievement system
-- Learning history tracking
-- Progress analytics
-- Custom exercise generation
-- Performance metrics
-- Difficulty adaptation
-- Personal learning paths
+**Stability** — Local fallback responses keep every major flow demoable when the API key is absent.
 
-## 🛠 Technology Stack
+---
 
-### Frontend
+## Project structure
 
-- React 18+
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- Lucide Icons
-- Markdown Support
-- Speech Recognition/Synthesis
+```
+├── app.py                  # Flask entry point and API routes
+├── services/               # Translator, chatbot, learning, practice, speech
+├── src/
+│   ├── pages/              # One file per screen (translation, voice, learn, practice, chatbot…)
+│   ├── components/         # Shared UI + practice-specific components
+│   ├── types/              # TypeScript models
+│   └── utils/              # Speech and language helpers
+├── scripts/                # Smoke tests
+├── requirements.txt
+└── package.json
+```
 
-### Backend
+---
 
-- Python/Flask
-- Groq LLM Integration
-- YouTube API Integration
-- Speech Processing
-- Custom NLP Services
+## Getting started
 
-### AI/ML Features
-
-- LLaMA 3.3 70B Model
-- Language Detection
-- Speech Recognition
-- Text-to-Speech
-- Context-Aware Responses
-- Exercise Generation
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 16+
-- Python 3.8+
-- Groq API Key
-
-### Installation
-
-1. Clone the repository:
+**Prerequisites:** Node.js 16+, Python 3.8+, a [Groq API key](https://console.groq.com) (free tier works)
 
 ```bash
-git clone <repository-url>
+git clone <repo-url>
+cd Langlearn-Language-Translation-and-Learning-Tool
+
+# Backend
+python -m venv .venv && .\.venv\Scripts\activate
+pip install -r requirements.txt
+
+# Frontend
+npm install
 ```
 
-2. Ensure you have Python 3.8+ installed, plus Node.js 16+ for frontend tasks.
-3. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Install frontend dependencies:
-   ```bash
-   cd project
-   npm install
-   ```
+Create `.env`:
 
-## Environment Variables
-
-Create or edit your `.env` file to include:
-
-````
-GROQ_API_KEY=<your-groq-api-key>
-
-## Running the Project
-1. Start the backend:
-   ```bash
-   python app.py
-````
-
-2. Start the frontend (in a separate terminal):
-   ```bash
-   cd project
-   ```
-3. Open the provided localhost URL in your browser.
-
-## Model Selection
-
-The Chatbot page now includes a dropdown to pick an AI model. Select from the available models before sending messages for custom responses.
-
-## Project Structure
-
-```
-├── app/
-│   ├── templates/
-│   ├── static/
-│   └── python_files/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── utils/
-
-├── package.json
-├── requirements.txt
-└── README.md
+```env
+GROQ_API_KEY=your_key_here
+VITE_API_URL=http://127.0.0.1:5000
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
-
-## License
-
-MIT
-
+```bash
+# Two terminals
+python app.py
+npm run dev:frontend
 ```
 
+---
+
+## Validation
+
+```bash
+npm run lint
+npm run build
+python -m compileall app.py services
+npm run smoke
 ```
