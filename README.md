@@ -2,99 +2,105 @@
 
 [![React](https://img.shields.io/badge/React_18-61DAFB?style=flat&logo=react&logoColor=111)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript_5-3178C6?style=flat&logo=typescript&logoColor=fff)](https://www.typescriptlang.org)
-[![Python](https://img.shields.io/badge/Python_3-3776AB?style=flat&logo=python&logoColor=fff)](https://python.org)
+[![Python](https://img.shields.io/badge/Python_3.8+-3776AB?style=flat&logo=python&logoColor=fff)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-000?style=flat&logo=flask&logoColor=fff)](https://flask.palletsprojects.com)
-[![Groq](https://img.shields.io/badge/Groq_LLM-F55036?style=flat)](https://groq.com)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=fff)](https://vitejs.dev)
+[![Groq · Llama 3.3 70B](https://img.shields.io/badge/Groq_·_Llama_3.3_70B-F55036?style=flat)](https://groq.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=fff)](https://tailwindcss.com)
 
-**Most translation tools stop at the answer. Langlearn explains why it works and gives you something to practise next.**
+Paste text, record your voice, or drop a YouTube URL — Langlearn gives you the translation **plus** the grammar breakdown, vocabulary, cultural context, and AI-generated exercises to actually retain it. Every translation becomes a lesson.
 
-Take any text, voice input, or YouTube video — get back a translation plus grammar breakdown, vocabulary, cultural context, and generated exercises. The learning happens alongside the translation, not separately.
-
----
-
-## What it does
-
-| Feature | Details |
-|---|---|
-| 📝 **Text translation** | Translation + grammar, vocabulary, literal meaning, pronunciation tips, cultural notes |
-| 🎙️ **Voice translation** | Speak → transcribe → translate → learning breakdown, all in one flow |
-| 🤖 **AI tutor** | Conversational practice with contextual follow-up suggestions |
-| 🏋️ **Practice centre** | AI-generated exercises by language, level, and type (fill-blanks, sentence-builder, vocab match, and more) |
-| 📺 **YouTube learning** | Paste a video URL → get captions, summary, vocabulary, grammar patterns, and practice materials |
-| 📊 **Progress tracking** | Achievements and history across all learning activities |
-
-Supports **40+ languages** including Spanish, French, German, Japanese, Hindi, Arabic, and more.
+> Supports 40+ languages. Runs fully offline-capable with local fallbacks when no API key is set.
 
 ---
 
-## How it's built
+## ✦ Features
 
-**Frontend** — React, TypeScript, Vite, Tailwind CSS, Framer Motion. Browser Speech API handles voice input without any third-party dependency.
-
-**Backend** — Python, Flask. All AI calls stay server-side; the browser never touches an API key.
-
-**AI layer** — Groq's inference API with Llama 3.3 70B. Structured JSON prompts enforce a consistent response shape so the UI renders predictably regardless of what the model returns.
-
-**YouTube pipeline** — `youtube_transcript_api` fetches captions, falls back to auto-generated transcripts, and translates when needed. The caption text goes straight into the same AI pipeline used for lessons and exercises.
-
-**Stability** — Local fallback responses keep every major flow demoable when the API key is absent.
+| | Feature | What you get |
+|---|---|---|
+| 📝 | **Text Translation** | Translation with grammar notes, literal meaning, vocabulary, pronunciation tips, and cultural context in one response |
+| 🎙️ | **Voice Translation** | Speak → transcribed → translated → full learning breakdown. Native browser Speech API, no third-party dependency |
+| 🤖 | **AI Tutor** | Conversational practice with contextual follow-up suggestions that adapt to what you just asked |
+| 🏋️ | **Practice Centre** | On-demand exercises across 8 types — fill-blanks, vocab match, sentence-builder, conversation sim, and more — generated per language and CEFR level |
+| 📺 | **YouTube Learning** | Paste a video ID → captions extracted, AI-summarised, and turned into vocabulary lists, grammar patterns, and practice materials |
+| 📊 | **Progress** | Achievements and history across every learning activity |
 
 ---
 
-## Project structure
+## ⚙️ How it's built
+
+The app is a React + TypeScript frontend talking to a Python / Flask REST API. Every AI call lives on the server — the browser never holds a key.
+
+**AI responses are schema-enforced.** Prompts to Groq's Llama 3.3 70B use `response_format: json_object` and a strict field contract. The UI maps a known shape every time; it never parses freeform text.
+
+**The YouTube pipeline has a fallback chain.** It tries the manual transcript first, then auto-generated captions, then requests a server-side translation of whatever is available. If all three fail, it tells the user cleanly rather than silently returning empty data.
+
+**Fallback responses are built in.** Every service checks for a missing API key at the top of the call and returns a usable local response. The entire app stays demoable with no credentials.
+
+**Voice input uses the browser's Speech API.** No Whisper, no assembly, no extra billing surface — just the Web Speech API, which keeps the voice flow self-contained and free.
+
+---
+
+## 🗂 Structure
 
 ```
-├── app.py                  # Flask entry point and API routes
-├── services/               # Translator, chatbot, learning, practice, speech
-├── src/
-│   ├── pages/              # One file per screen (translation, voice, learn, practice, chatbot…)
-│   ├── components/         # Shared UI + practice-specific components
-│   ├── types/              # TypeScript models
-│   └── utils/              # Speech and language helpers
-├── scripts/                # Smoke tests
-├── requirements.txt
-└── package.json
+app.py                      Flask entry point + all API routes
+services/
+  translator.py             Groq translation + context generation
+  learning_service.py       Lesson generation
+  practice_service.py       Exercise generation (8 types)
+  chatbot_service.py        Conversational AI tutor
+  speech_service.py         Voice transcription helpers
+src/
+  pages/                    One component per screen
+  components/ui/            Shared primitives (Button, Card, etc.)
+  types/                    TypeScript models shared across pages
+  utils/                    Speech helpers, language utilities
+scripts/                    Smoke tests (UI + API)
 ```
 
 ---
 
-## Getting started
+## 🚀 Getting started
 
-**Prerequisites:** Node.js 16+, Python 3.8+, a [Groq API key](https://console.groq.com) (free tier works)
+**You need:** Node.js 16+, Python 3.8+, a [Groq API key](https://console.groq.com) (free tier works fine)
 
 ```bash
 git clone <repo-url>
 cd Langlearn-Language-Translation-and-Learning-Tool
 
-# Backend
-python -m venv .venv && .\.venv\Scripts\activate
+# Python backend
+python -m venv .venv
+.\.venv\Scripts\activate       # Windows
+# source .venv/bin/activate    # macOS / Linux
 pip install -r requirements.txt
 
 # Frontend
 npm install
 ```
 
-Create `.env`:
-
 ```env
+# .env
 GROQ_API_KEY=your_key_here
 VITE_API_URL=http://127.0.0.1:5000
 ```
 
 ```bash
-# Two terminals
+# Terminal 1
 python app.py
+
+# Terminal 2
 npm run dev:frontend
 ```
 
+Open the Vite localhost URL. The backend runs on `:5000`.
+
 ---
 
-## Validation
+## ✅ Checks
 
 ```bash
-npm run lint
-npm run build
-python -m compileall app.py services
-npm run smoke
+npm run lint              # ESLint
+npm run build             # TypeScript compile + Vite bundle
+python -m compileall app.py services   # Python syntax check
+npm run smoke             # API smoke tests
 ```
