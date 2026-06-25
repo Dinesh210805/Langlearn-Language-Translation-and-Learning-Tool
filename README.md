@@ -1,3 +1,13 @@
+---
+title: Langlearn
+emoji: 🌍
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Langlearn
 
 [![React](https://img.shields.io/badge/React_18-61DAFB?style=flat&logo=react&logoColor=111)](https://react.dev)
@@ -6,8 +16,13 @@
 [![Flask](https://img.shields.io/badge/Flask-000?style=flat&logo=flask&logoColor=fff)](https://flask.palletsprojects.com)
 [![Groq · Llama 3.3 70B](https://img.shields.io/badge/Groq_·_Llama_3.3_70B-F55036?style=flat)](https://groq.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=fff)](https://tailwindcss.com)
+[![Live Demo](https://img.shields.io/badge/▶_Live_Demo-Hugging_Face_Spaces-FFD21E?style=flat&logo=huggingface&logoColor=000)](https://dinesh210805-langlearn.hf.space)
+[![CI](https://github.com/Dinesh210805/Langlearn-Language-Translation-and-Learning-Tool/actions/workflows/ci.yml/badge.svg)](https://github.com/Dinesh210805/Langlearn-Language-Translation-and-Learning-Tool/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Paste text, record your voice, or drop a YouTube URL — Langlearn gives you the translation **plus** the grammar breakdown, vocabulary, cultural context, and AI-generated exercises to actually retain it. Every translation becomes a lesson.
+
+**▶ Try it live: [dinesh210805-langlearn.hf.space](https://dinesh210805-langlearn.hf.space)** — deployed free as a single Docker container on Hugging Face Spaces.
 
 > Supports 40+ languages. Runs fully offline-capable with local fallbacks when no API key is set.
 
@@ -103,4 +118,28 @@ npm run lint              # ESLint
 npm run build             # TypeScript compile + Vite bundle
 python -m compileall app.py services   # Python syntax check
 npm run smoke             # API smoke tests
+```
+
+---
+
+## ☁️ Deployment
+
+Langlearn ships as a **single Docker container**: Flask serves the compiled React
+bundle *and* the REST API from one origin, so there's no CORS setup and no second
+service to keep alive. It runs free on Hugging Face Spaces (CPU basic).
+
+| Artifact | Role |
+|---|---|
+| `Dockerfile` | Multi-stage — Node builds the frontend, Python serves it via gunicorn on port `7860` |
+| `.dockerignore` | Keeps `node_modules`, media, and secrets out of the image |
+| `.env.production` | Builds the frontend with same-origin API calls (`/api/...`) |
+| `README.md` frontmatter | `sdk: docker` + `app_port: 7860` for the Space |
+
+Full step-by-step instructions: **[DEPLOY.md](DEPLOY.md)**.
+
+```bash
+# Build and run the production container locally
+docker build -t langlearn .
+docker run -p 7860:7860 -e GROQ_API_KEY=your_key_here langlearn
+# open http://localhost:7860
 ```

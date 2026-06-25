@@ -1,0 +1,27 @@
+# Dependencies / build output (rebuilt inside the image)
+node_modules
+dist
+.venv
+
+# Python caches
+__pycache__
+*.py[cod]
+
+# Local runtime junk
+temp
+*.log
+
+# Secrets — provided at runtime via HF Space secrets, never baked into the image
+.env
+
+# Version control & editor
+.git
+.gitignore
+.serena
+.vscode
+.idea
+
+# Large media not needed by the app (the 46MB demo video)
+*.mp4
+
+# Keep: .env.production (Vite build), .env.example, requirements.txt, package*.json

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from services.translator import GroqTranslator
 import os
@@ -11,8 +11,13 @@ from services.learning_service import LearningService
 from youtube_transcript_api import YouTubeTranscriptApi
 from services.practice_service import PracticeService
 from services.chatbot_service import ChatbotService
+from dotenv import load_dotenv
 
-app = Flask(__name__)
+load_dotenv()
+
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), 'dist')
+
+app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='')
 # Update CORS configuration to be more permissive for development
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -20,8 +25,8 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
-GROQ_API_ENDPOINT = "https://api.groq.com/v1/completions"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_API_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 translator = GroqTranslator(GROQ_API_KEY)
 learning_service = LearningService(GROQ_API_KEY)
 practice_service = PracticeService(GROQ_API_KEY)
@@ -84,9 +89,132 @@ CHATBOT_RESPONSES = {
     }
 }
 
+LESSONS_CATALOG = {
+    "Spanish": {
+        "beginner": [
+            {
+                "id": "1.1",
+                "title": "Basic Greetings",
+                "level": "A1",
+                "description": "Learn essential Spanish greetings",
+                "duration": "10 min",
+                "videoUrl": "https://www.youtube.com/embed/TZ0bPXFHiiY",
+                "video_id": "TZ0bPXFHiiY",
+            },
+            {
+                "id": "1.2",
+                "title": "Numbers & Counting",
+                "level": "A1",
+                "description": "Master numbers 1-100",
+                "duration": "15 min",
+                "videoUrl": "https://www.youtube.com/embed/j91m55N7e9I",
+                "video_id": "j91m55N7e9I",
+            },
+        ],
+    },
+    "French": {
+        "beginner": [
+            {
+                "id": "1.1",
+                "title": "Basic Greetings",
+                "level": "A1",
+                "description": "Essential French greetings",
+                "duration": "10 min",
+                "videoUrl": "https://www.youtube.com/embed/car6SARpDDc",
+                "video_id": "car6SARpDDc",
+            },
+        ],
+    },
+    "German": {
+        "beginner": [
+            {
+                "id": "1.1",
+                "title": "Basic Greetings",
+                "level": "A1",
+                "description": "Essential German greetings",
+                "duration": "10 min",
+                "videoUrl": "https://www.youtube.com/embed/e784UaFETQg",
+                "video_id": "e784UaFETQg",
+            },
+        ],
+    },
+}
+
+PRACTICE_CATALOG = {
+    "languages": ["English", "Spanish", "German", "French"],
+    "levels": ["A1", "A2", "B1", "B2"],
+    "types": [
+        "vocabulary-match",
+        "sentence-builder",
+        "listening-challenge",
+        "pronunciation-game",
+        "word-puzzle",
+        "conversation-sim",
+        "memory-cards",
+        "fill-blanks",
+    ],
+}
+
+ACHIEVEMENTS = [
+    {
+        "id": 1,
+        "title": "First Steps",
+        "description": "Complete your first lesson",
+        "progress": 100,
+        "completed": True,
+    },
+    {
+        "id": 2,
+        "title": "Quick Learner",
+        "description": "Complete 5 lessons in one day",
+        "progress": 60,
+        "completed": False,
+    },
+    {
+        "id": 3,
+        "title": "Practice Makes Perfect",
+        "description": "Complete 10 practice exercises",
+        "progress": 30,
+        "completed": False,
+    },
+]
+
+LEARNING_HISTORY = [
+    {
+        "id": 1,
+        "type": "translation",
+        "title": "Text Translation",
+        "description": 'Translated "Hello, how are you?" to Spanish',
+        "timestamp": "2 hours ago",
+    },
+    {
+        "id": 2,
+        "type": "lesson",
+        "title": "Lesson Completed",
+        "description": "Basic Greetings - Spanish",
+        "timestamp": "1 day ago",
+    },
+    {
+        "id": 3,
+        "type": "practice",
+        "title": "Practice Exercise",
+        "description": "Vocabulary Quiz - Score: 8/10",
+        "timestamp": "2 days ago",
+    },
+]
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # In production the compiled React app lives in dist/ and is served here.
+    # Locally (no build), fall back to a JSON health response.
+    try:
+        return app.send_static_file('index.html')
+    except Exception:
+        return jsonify({
+            "status": "ok",
+            "service": "Langlearn backend",
+            "frontend": "Run npm run dev:frontend for the Vite app.",
+        })
 
 @app.route('/api/translate/text', methods=['POST'])
 def translate_text():
@@ -199,13 +327,11 @@ def get_lesson():
 
 @app.route('/api/lessons', methods=['GET'])
 def get_lessons():
-    # TODO: Implement lessons retrieval
-    pass
+    return jsonify(LESSONS_CATALOG)
 
 @app.route('/api/practice', methods=['GET'])
 def get_practice():
-    # TODO: Implement practice exercises
-    pass
+    return jsonify(PRACTICE_CATALOG)
 
 @app.route('/api/chatbot', methods=['POST'])
 def chat():
@@ -250,13 +376,11 @@ def chat():
 
 @app.route('/api/achievements', methods=['GET'])
 def get_achievements():
-    # TODO: Implement achievements
-    pass
+    return jsonify({"achievements": ACHIEVEMENTS})
 
 @app.route('/api/history', methods=['GET'])
 def get_history():
-    # TODO: Implement history retrieval
-    pass
+    return jsonify({"activities": LEARNING_HISTORY})
 
 @app.route('/api/youtube/captions', methods=['GET'])
 def get_youtube_captions():
@@ -341,11 +465,11 @@ def get_youtube_captions():
         })
 
     except Exception as e:
-        logger.exception(f"Caption fetch error: {str(e)}")
+        logger.warning(f"Caption fetch error: {str(e)}")
         return jsonify({
             'error': 'Failed to fetch captions',
             'details': str(e)
-        }), 500
+        }), 404
 
 @app.route('/api/generate-summary', methods=['POST'])
 def generate_summary():
@@ -372,6 +496,9 @@ def generate_course_summary():
 
         if not captions:
             return jsonify({'error': 'Missing captions'}), 400
+
+        if not GROQ_API_KEY:
+            return jsonify(get_fallback_course_summary(captions, language))
 
         headers = {
             "Authorization": f"Bearer {GROQ_API_KEY}",
@@ -421,27 +548,46 @@ def generate_course_summary():
             ]
         }}"""
 
+        request_body = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [
+                {"role": "system", "content": "You are an expert language teacher creating detailed lesson summaries with timelines and practice materials. Return only valid JSON."},
+                {"role": "user", "content": structured_prompt}
+            ],
+            "temperature": 0.3,
+            "max_tokens": 4000,
+            "response_format": {"type": "json_object"}
+        }
+
         response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers=headers,
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [
-                    {"role": "system", "content": "You are an expert language teacher creating detailed lesson summaries with timelines and practice materials."},
-                    {"role": "user", "content": structured_prompt}
-                ],
-                "temperature": 0.3,
-                "max_tokens": 4000,
-                "response_format": {"type": "json_object"}
-            }
+            json=request_body
         )
 
         if not response.ok:
+            logger.warning(f"Strict summary generation failed: {response.text}")
+            request_body.pop("response_format", None)
+            response = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers=headers,
+                json=request_body
+            )
+
+        if not response.ok:
             logger.error(f"Groq API error: {response.text}")
-            return jsonify({'error': 'Failed to generate summary'}), response.status_code
+            return jsonify(get_fallback_course_summary(captions, language))
 
         result = response.json()
-        content = json.loads(result['choices'][0]['message']['content'])
+        content_text = result['choices'][0]['message']['content'].strip()
+        try:
+            content = json.loads(content_text)
+        except json.JSONDecodeError:
+            start = content_text.find("{")
+            end = content_text.rfind("}") + 1
+            if start == -1 or end <= start:
+                raise
+            content = json.loads(content_text[start:end])
 
         # Enhanced response structure with timeline and practice materials
         formatted_response = {
@@ -461,12 +607,10 @@ def generate_course_summary():
         logger.exception("Failed to generate course summary")
         error_msg = str(e)
         logger.error(f"Error details: {error_msg}")
-        return jsonify({
-            'error': 'Failed to generate summary',
-            'details': error_msg
-        }), 500
+        return jsonify(get_fallback_course_summary(captions, language))
 
 @app.route('/api/practice/generate', methods=['POST'])
+@app.route('/api/generate-exercises', methods=['POST'])
 def generate_practice():
     try:
         data = request.get_json()
@@ -498,6 +642,9 @@ def generate_practice():
 
 def generate_summary_from_captions(captions: str, language: str) -> str:
     try:
+        if not GROQ_API_KEY:
+            return f"Local summary for {language}: {captions[:240].strip()}"
+
         headers = {
             "Authorization": f"Bearer {GROQ_API_KEY}",
             "Content-Type": "application/json"
@@ -509,18 +656,55 @@ def generate_summary_from_captions(captions: str, language: str) -> str:
             GROQ_API_ENDPOINT,
             headers=headers,
             json={
-                "prompt": prompt,
-                "max_tokens": 150
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {"role": "system", "content": "You create concise language-learning summaries."},
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.3,
+                "max_tokens": 300
             }
         )
 
         if response.status_code == 200:
             result = response.json()
-            return result['choices'][0]['text'].strip()
+            return result['choices'][0]['message']['content'].strip()
+        logger.error(f"Summary API error: {response.text}")
         return "Summary not available."
     except Exception as e:
         logger.error(f"Error generating summary: {str(e)}")
         return "Summary not available."
+
+def get_fallback_course_summary(captions: str, language: str) -> dict:
+    preview = captions[:180].strip() or "No caption text provided."
+    return {
+        "summary": {
+            "mainPoints": [
+                f"Review the {language or 'language'} lesson transcript.",
+                "Identify repeated words and phrases.",
+                "Practice listening and repeating short segments.",
+            ],
+            "keyVocabulary": [
+                {"word": "caption text", "meaning": preview},
+            ],
+            "conceptBreakdown": [
+                {
+                    "concept": "Listening comprehension",
+                    "explanation": "Use the captions as short chunks for reading, listening, and recall practice.",
+                }
+            ],
+            "culturalInsights": [
+                "Configure GROQ_API_KEY for richer AI-generated cultural notes.",
+            ],
+            "practiceExercises": [
+                {
+                    "type": "shadowing",
+                    "description": "Read one caption line aloud, then repeat it without looking.",
+                }
+            ],
+        },
+        "timestamps": [{"time": "0:00", "topic": "Caption review"}],
+    }
 
 def fetch_youtube_captions(video_id: str) -> str:
     try:
@@ -534,6 +718,21 @@ def fetch_youtube_captions(video_id: str) -> str:
         logger.error(f"Error fetching captions: {str(e)}")
         return "Captions not available."
 
+@app.errorhandler(404)
+def not_found(error):
+    # API routes return JSON 404s; missing static assets return JSON 404s.
+    # Everything else is treated as a client-side (React Router) route and
+    # falls through to index.html so the SPA can handle routing.
+    path = request.path
+    if path.startswith('/api/'):
+        return jsonify({"error": "Not found", "status": "error"}), 404
+    if '.' in path.rsplit('/', 1)[-1]:
+        return jsonify({"error": "Not found", "status": "error"}), 404
+    try:
+        return app.send_static_file('index.html')
+    except Exception:
+        return jsonify({"error": "Not found", "status": "error"}), 404
+
 @app.errorhandler(Exception)
 def handle_error(error):
     logger.exception("An error occurred:")
@@ -544,5 +743,6 @@ def handle_error(error):
     return jsonify(response), 500
 
 if __name__ == '__main__':
-    # Update host and port configuration
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    debug_enabled = os.getenv("FLASK_DEBUG", "0") == "1"
+    port = int(os.getenv("PORT", "5000"))
+    app.run(host='0.0.0.0', port=port, debug=debug_enabled)

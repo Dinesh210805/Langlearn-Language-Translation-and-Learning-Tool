@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, Speaker, Wand2, Volume2 } from "lucide-react";
 import { speakText, LANGUAGE_TO_SPEECH_CODE } from "../utils/speech";
+import type { TranslationResponse } from "../types/translation";
 
 declare global {
   interface Window {
@@ -12,7 +13,7 @@ import { Card } from "../components/ui/Card";
 import { FloatingParticles } from "../components/ui/FloatingParticles";
 import { TranslationDetails } from "../components/ui/TranslationDetails";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:5000";
 
 const LANGUAGES = {
   en: "English",
@@ -64,7 +65,8 @@ function VoiceTranslation() {
   const [audioStream, setAudioStream] = useState<MediaRecorder | null>(null);
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [translatedAudio, setTranslatedAudio] = useState<string>("");
-  const [translationDetails, setTranslationDetails] = useState<any>(null);
+  const [translationDetails, setTranslationDetails] =
+    useState<TranslationResponse | null>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string>("");
@@ -169,9 +171,9 @@ function VoiceTranslation() {
           details: {},
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Translation failed:", error);
-      setError(error.message || "Translation failed");
+      setError(error instanceof Error ? error.message : "Translation failed");
     } finally {
       setIsTranslating(false);
     }

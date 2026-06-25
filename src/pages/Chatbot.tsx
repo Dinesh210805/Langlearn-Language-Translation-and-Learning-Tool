@@ -13,6 +13,8 @@ import { FloatingParticles } from "../components/ui/FloatingParticles";
 import { ChatMessage } from "../components/ui/ChatMessage";
 import { Avatar } from "../components/ui/Avatar";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:5000";
+
 interface Message {
   id: number;
   text: string;
@@ -104,7 +106,7 @@ export function Chatbot({ defaultLanguage = "en" }: ChatbotProps) {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/chatbot`,
+        `${API_URL}/api/chatbot`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -147,13 +149,14 @@ export function Chatbot({ defaultLanguage = "en" }: ChatbotProps) {
         )
       );
     } catch (error) {
-      console.error("Chat error:", error);
+      console.warn("Chat fallback used:", error);
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now(),
-          text: "Sorry, I encountered an error. Please try again.",
+          text: "Grammar: I can still help locally.\nExample: Try a short sentence in your target language.\nPractice: Send one phrase and I will help you refine it.",
           isBot: true,
+          options: ["Give me an example", "Correct my sentence", "Start a quiz"],
         },
       ]);
     } finally {

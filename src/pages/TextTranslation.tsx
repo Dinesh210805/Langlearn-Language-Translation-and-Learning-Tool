@@ -6,58 +6,13 @@ import {
   Copy,
   Volume2,
   ArrowLeftRight,
+  Sparkles,
 } from "lucide-react";
-import { Card } from "../components/ui/card2";
-import { FloatingParticles } from "../components/ui/FloatingParticles";
 import { speakText, LANGUAGE_TO_SPEECH_CODE } from "../utils/speech";
 import { TranslationDetails } from "../components/ui/TranslationDetails";
+import type { TranslationResponse } from "../types/translation";
 
-interface TranslationResponse {
-  translation: string;
-  literal: string;
-  cultural_context: {
-    usage: string;
-    formality: string;
-    cultural_notes: string;
-    regional_variations: string;
-  };
-  grammar: {
-    explanation: string;
-    key_points: string[];
-    tense_mood: string;
-    structure: string;
-    common_mistakes: string[];
-  };
-  examples: Array<{
-    original: string;
-    translation: string;
-    context: string;
-    level: string;
-  }>;
-  idioms: Array<{
-    phrase: string;
-    meaning: string;
-    usage: string;
-    equivalent: string;
-  }>;
-  practice_tips: string[];
-  pronunciation: {
-    ipa: string;
-    tips: string[];
-    common_challenges: string;
-  };
-  vocabulary: Array<{
-    word: string;
-    type: string;
-    meaning: string;
-    synonyms: string[];
-    usage_example: string;
-  }>;
-  learning_level: string;
-  related_topics: string[];
-}
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:5000";
 
 const LANGUAGES = {
   auto: "Auto Detect",
@@ -206,43 +161,46 @@ function TextTranslation() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-indigo-950 to-gray-900 text-white py-8 relative overflow-hidden">
-      <FloatingParticles />
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-gradient" />
-
+    <section className="translator-page page-shell">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="max-w-6xl mx-auto px-4 relative"
+        className="page-stack"
       >
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex items-center gap-4 mb-12"
+          className="page-header split-header"
         >
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-70 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse" />
-            <Languages className="w-12 h-12 text-blue-400 relative" />
+          <div className="title-lockup">
+            <span className="section-icon">
+              <Languages className="w-6 h-6" />
+            </span>
+            <div>
+              <p className="eyebrow">Translation workspace</p>
+              <h1>Universal Translator</h1>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-            Universal Translator
-          </h1>
+          <div className="header-note">
+            <Sparkles className="w-4 h-4" />
+            <span>Translation plus grammar, pronunciation, examples, and culture.</span>
+          </div>
         </motion.div>
 
         <form onSubmit={handleTranslate} className="space-y-8">
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="backdrop-blur-lg bg-white/5 rounded-2xl p-6 border border-white/10"
+            className="translator-workbench"
           >
-            <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-              <div className="flex-1 w-full relative">
+            <div className="language-bar">
+              <div className="language-field">
+                <label htmlFor="sourceLang">From</label>
                 <select
                   id="sourceLang"
                   value={sourceLang}
                   onChange={(e) => setSourceLang(e.target.value)}
-                  className="w-full rounded-xl bg-gray-800/50 border-gray-700 text-white focus:border-blue-500 focus:ring-blue-500 transition-all hover:bg-gray-800/70"
+                  className="control-input"
                 >
                   {Object.entries(LANGUAGES).map(([code, name]) => (
                     <option key={code} value={code}>
@@ -251,7 +209,7 @@ function TextTranslation() {
                   ))}
                 </select>
                 {detectedLang && sourceLang === "auto" && (
-                  <div className="absolute -bottom-6 left-0 text-sm text-blue-400">
+                  <div className="detected-language">
                     Detected:{" "}
                     {LANGUAGES[detectedLang as keyof typeof LANGUAGES]}
                   </div>
@@ -261,20 +219,21 @@ function TextTranslation() {
               <motion.button
                 type="button"
                 onClick={switchLanguages}
-                className="p-3 rounded-full hover:bg-gray-700/50 transition-all hover:scale-110 group"
+                className="switch-button"
                 whileHover={{ rotate: 180 }}
                 whileTap={{ scale: 0.9 }}
                 title="Switch languages"
               >
-                <ArrowLeftRight className="w-6 h-6 text-blue-400 group-hover:text-blue-300" />
+                <ArrowLeftRight className="w-5 h-5" />
               </motion.button>
 
-              <div className="flex-1 w-full">
+              <div className="language-field">
+                <label htmlFor="targetLang">To</label>
                 <select
                   id="targetLang"
                   value={targetLang}
                   onChange={(e) => setTargetLang(e.target.value)}
-                  className="w-full rounded-xl bg-gray-800/50 border-gray-700 text-white focus:border-blue-500 focus:ring-blue-500 transition-all hover:bg-gray-800/70"
+                  className="control-input"
                 >
                   {Object.entries(LANGUAGES).map(([code, name]) => (
                     <option key={code} value={code}>
@@ -285,64 +244,95 @@ function TextTranslation() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-lg hover:bg-gray-800/40 transition-all">
-                <div className="p-4">
+            <div className="translation-grid">
+              <div className="translation-panel">
+                <div className="panel-toolbar">
+                  <span>Source text</span>
+                  <button
+                    type="button"
+                    className="icon-action"
+                    onClick={() => handleSpeak(sourceText, sourceLang)}
+                    aria-label="Read source text aloud"
+                    disabled={!sourceText.trim()}
+                  >
+                    <Volume2 className="w-5 h-5" />
+                  </button>
+                </div>
                   <textarea
                     id="sourceText"
                     value={sourceText}
                     onChange={(e) => setSourceText(e.target.value)}
                     rows={6}
-                    className="w-full rounded-xl bg-gray-700/30 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500 placeholder-gray-400 transition-all focus:bg-gray-700/50"
-                    placeholder="Type or paste your text here..."
+                    className="translation-textarea"
+                    placeholder="Type or paste a phrase to translate..."
                   />
-                  <div className="flex justify-end mt-2">
+              </div>
+
+              <div className="translation-panel translation-panel-result">
+                <div className="panel-toolbar">
+                  <span>Translation</span>
+                  <div className="panel-actions">
                     <button
                       type="button"
-                      className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
-                      onClick={() => handleSpeak(sourceText, sourceLang)}
+                      className="icon-action"
+                      onClick={() => navigator.clipboard.writeText(translatedText)}
+                      aria-label="Copy translation"
+                      disabled={!translatedText}
+                    >
+                      <Copy className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-action"
+                      onClick={() => handleSpeak(translatedText, targetLang)}
+                      aria-label="Read translation aloud"
+                      disabled={!translatedText}
                     >
                       <Volume2 className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-              </Card>
-
-              <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-lg hover:bg-gray-800/40 transition-all">
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    {translatedText && (
-                      <button
-                        type="button"
-                        className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
-                        onClick={() =>
-                          navigator.clipboard.writeText(translatedText)
-                        }
-                      >
-                        <Copy className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                  <div className="min-h-[144px] rounded-lg bg-gray-700/50 p-3">
+                  <div className="translation-output">
                     {error ? (
-                      <p className="text-red-400">{error}</p>
+                      <p className="error-text">{error}</p>
                     ) : (
-                      <p className="text-gray-100">
+                      <p>
                         {translatedText || "Translation will appear here..."}
                       </p>
                     )}
                   </div>
-                  <div className="flex justify-end mt-2">
-                    <button
-                      type="button"
-                      className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
-                      onClick={() => handleSpeak(translatedText, targetLang)}
-                    >
-                      <Volume2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </Card>
+              </div>
+            </div>
+
+            <div className="workbench-footer">
+              <span>{sourceText.length} characters</span>
+              <motion.button
+                type="submit"
+                className="primary-action translate-action"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isTranslating || !sourceText.trim()}
+              >
+                {isTranslating ? (
+                  <>
+                    <motion.span
+                      className="inline-block h-4 w-4 rounded-full border-2 border-current border-t-transparent"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                    Translating
+                  </>
+                ) : (
+                  <>
+                    Translate
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </motion.button>
             </div>
           </motion.div>
 
@@ -359,42 +349,9 @@ function TextTranslation() {
               />
             </motion.div>
           )}
-
-          <div className="flex justify-center pt-8">
-            <motion.button
-              type="submit"
-              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-full text-lg font-semibold transition-all hover:shadow-[0_0_30px_-5px] hover:shadow-blue-500/50 disabled:opacity-50 disabled:hover:shadow-none"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isTranslating}
-            >
-              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-gradient-x" />
-              <span className="relative flex items-center gap-3">
-                {isTranslating ? (
-                  <>
-                    <motion.div
-                      className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-                    Translating...
-                  </>
-                ) : (
-                  <>
-                    Translate
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </span>
-            </motion.button>
-          </div>
         </form>
       </motion.div>
-    </div>
+    </section>
   );
 }
 

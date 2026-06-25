@@ -7,7 +7,7 @@ import { LESSONS_DATA } from "../data/lessons";
 import { Card } from "../components/ui/card2";
 import { FloatingParticles } from "../components/ui/FloatingParticles";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:5000";
 
 export function Learning() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("Spanish");
@@ -119,7 +119,7 @@ export function Learning() {
       // Return single language version
       return `${translatedLang}:\n${translatedText || originalText}`;
     } catch (error) {
-      console.error("Error fetching captions:", error);
+      console.warn("Error fetching captions:", error);
       return `Captions not available in ${selectedLanguage}. ${
         error instanceof Error ? error.message : ""
       }`;
@@ -428,7 +428,10 @@ export function Learning() {
     </div>
   );
 
-  const renderSectionContent = (section: any, content: any) => {
+  const renderSectionContent = (
+    section: LessonContent["sections"][number],
+    content: LessonContent["sections"][number]["content"]
+  ) => {
     if (section.title === "Key Vocabulary" && Array.isArray(content)) {
       return (
         <div className="grid gap-4 md:grid-cols-2">
@@ -593,6 +596,7 @@ export function Learning() {
                 </div>
                 <button
                   onClick={() => handleSelectLesson(lesson)}
+                  aria-label={`Start ${lesson.title}`}
                   className="p-3 rounded-full bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors group-hover:scale-110"
                 >
                   <Play className="w-5 h-5" />
@@ -670,6 +674,7 @@ export function Learning() {
                 </div>
                 <button
                   onClick={() => handleSelectLesson(lesson)}
+                  aria-label={`Start ${lesson.title}`}
                   className="p-3 rounded-full bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors group-hover:scale-110"
                 >
                   <Play className="w-5 h-5" />
