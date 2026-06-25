@@ -97,6 +97,9 @@ class GroqTranslator:
             return "en"
 
     def translate_with_context(self, text: str, source_lang: str, target_lang: str) -> Dict:
+        if not self.api_key:
+            return self._get_fallback_translation(text, source_lang, target_lang)
+
         retry_count = 0
         while retry_count < self.max_retries:
             try:
@@ -261,6 +264,74 @@ class GroqTranslator:
                 raise
 
         raise Exception("Translation failed after maximum retries")
+
+    def generate_additional_examples(self, text: str, source_lang: str, target_lang: str) -> Dict:
+        translation = self.translate_with_context(text, source_lang, target_lang)
+        return {
+            "examples": translation.get("examples", []),
+            "practice_tips": translation.get("practice_tips", []),
+            "related_topics": translation.get("related_topics", []),
+        }
+
+    def _get_fallback_translation(self, text: str, source_lang: str, target_lang: str) -> Dict:
+        phrasebook = {
+            ("hello", "es"): "hola",
+            ("hello", "fr"): "bonjour",
+            ("hello", "de"): "hallo",
+            ("how are you?", "es"): "¿cómo estás?",
+            ("how are you?", "fr"): "comment ça va ?",
+            ("how are you?", "de"): "wie geht es dir?",
+            ("thank you", "es"): "gracias",
+            ("thank you", "fr"): "merci",
+            ("thank you", "de"): "danke",
+        }
+        normalized_text = text.strip().lower()
+        target_code = self.languages.get(target_lang, target_lang)
+        translation = phrasebook.get((normalized_text, target_code), text)
+
+        return {
+            "translation": translation,
+            "literal": "Local fallback translation. Add GROQ_API_KEY for full AI analysis.",
+            "cultural_context": {
+                "usage": "Suitable for basic practice and app testing.",
+                "formality": "Neutral",
+                "cultural_notes": "AI cultural notes require a configured Groq API key.",
+                "regional_variations": "Not available in local fallback mode.",
+            },
+            "grammar": {
+                "explanation": "Detailed grammar analysis requires a configured Groq API key.",
+                "key_points": ["Practice the phrase aloud.", "Compare the word order with your source language."],
+                "tense_mood": "Not analyzed in local fallback mode.",
+                "structure": "Basic phrase structure.",
+                "common_mistakes": ["Relying on word-for-word translation for idioms."],
+            },
+            "examples": [
+                {
+                    "original": translation,
+                    "translation": text,
+                    "context": "Basic conversation",
+                    "level": "A1",
+                }
+            ],
+            "idioms": [],
+            "practice_tips": ["Say the phrase three times.", "Use it in a short sentence."],
+            "pronunciation": {
+                "ipa": "Not available",
+                "tips": ["Listen to native audio when available."],
+                "common_challenges": "Pronunciation analysis requires AI mode.",
+            },
+            "vocabulary": [
+                {
+                    "word": translation,
+                    "type": "phrase",
+                    "meaning": text,
+                    "synonyms": [],
+                    "usage_example": translation,
+                }
+            ],
+            "learning_level": "A1",
+            "related_topics": ["Greetings", "Basic conversation"],
+        }
 
     def translate_voice(self, audio_data: bytes, source_lang: str, target_lang: str) -> Dict:
         """Translate voice input to voice output with proper error handling."""

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Trophy, Star, Clock, Target } from 'lucide-react';
+import { Trophy, Star, Clock, Target, CheckCircle2 } from 'lucide-react';
 
 function Achievements() {
   const achievements = [
@@ -30,56 +30,55 @@ function Achievements() {
   ];
 
   return (
-    <motion.div
+    <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="max-w-4xl mx-auto"
+      className="page-shell page-stack"
     >
-      <div className="flex items-center gap-3 mb-8">
-        <Trophy className="w-8 h-8 text-blue-600" />
-        <h1 className="text-3xl font-bold">Achievements</h1>
+      <div className="page-header split-header">
+        <div className="title-lockup">
+          <span className="section-icon">
+            <Trophy className="w-6 h-6" />
+          </span>
+          <div>
+            <p className="eyebrow">Progress shelf</p>
+            <h1>Achievements</h1>
+          </div>
+        </div>
+        <div className="header-note">
+          <CheckCircle2 className="w-4 h-4" />
+          <span>Keep a visible trail of completed learning moments.</span>
+        </div>
       </div>
 
-      <div className="grid gap-6">
+      <div className="progress-grid">
         {achievements.map((achievement) => {
           const Icon = achievement.icon;
           return (
             <motion.div
               key={achievement.id}
-              whileHover={{ scale: 1.02 }}
-              className={`p-6 bg-white rounded-lg shadow-sm border ${
-                achievement.completed ? 'border-green-200' : 'border-gray-200'
+              whileHover={{ y: -3 }}
+              className={`progress-card ${
+                achievement.completed ? 'progress-card-complete' : ''
               }`}
             >
-              <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-full ${
-                  achievement.completed ? 'bg-green-100' : 'bg-gray-100'
-                }`}>
-                  <Icon className={`w-6 h-6 ${
-                    achievement.completed ? 'text-green-600' : 'text-gray-600'
-                  }`} />
+              <div className="progress-card-top">
+                <div className="progress-icon">
+                  <Icon className="w-6 h-6" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">
-                    {achievement.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">{achievement.description}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${achievement.progress}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Progress: {achievement.progress}%
-                  </p>
-                </div>
+                <span>{achievement.completed ? 'Complete' : 'In progress'}</span>
               </div>
+              <h3>{achievement.title}</h3>
+              <p>{achievement.description}</p>
+              <div className="progress-track" aria-label={`${achievement.progress}% complete`}>
+                <span style={{ width: `${achievement.progress}%` }} />
+              </div>
+              <strong>{achievement.progress}%</strong>
             </motion.div>
           );
         })}
       </div>
-    </motion.div>
+    </motion.section>
   );
 }
 

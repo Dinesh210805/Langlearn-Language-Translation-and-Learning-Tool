@@ -70,6 +70,20 @@ class ChatbotService:
 
     def generate_response(self, messages: List[Dict[str, str]], language: str = "en") -> Dict[str, Any]:
         try:
+            if not self.api_key:
+                last_message = next(
+                    (msg.get("content", "") for msg in reversed(messages) if msg.get("content")),
+                    "Let's practice.",
+                )
+                return {
+                    "response": self.format_response(
+                        f"Grammar: I can help you practice {language} locally.\n"
+                        f"Example: You said: {last_message}\n"
+                        "Practice: Try writing one more sentence and I will help you improve it."
+                    ),
+                    "options": ["Give me an example", "Correct my sentence", "Start a quiz"],
+                }
+
             # Clean up messages format
             formatted_messages = [
                 {"role": "system", "content": self._get_system_prompt(language)}

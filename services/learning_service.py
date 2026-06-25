@@ -16,6 +16,9 @@ class LearningService:
 
     def generate_lesson_content(self, lesson_name: str, language: str, level: str) -> Dict[str, Any]:
         try:
+            if not self.api_key:
+                return self._get_fallback_content(lesson_name)
+
             prompt = f"""Generate a comprehensive {language} language lesson for {level} level.
             Topic: {lesson_name}
 

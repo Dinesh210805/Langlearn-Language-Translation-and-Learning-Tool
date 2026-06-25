@@ -42,6 +42,8 @@ export function IconButton({
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      title={tooltip}
+      aria-label={tooltip}
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >

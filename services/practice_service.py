@@ -16,6 +16,9 @@ class PracticeService:
 
     def generate_exercises(self, language: str, level: str, exercise_type: str) -> Dict[str, Any]:
         try:
+            if not self.api_key:
+                return self._get_fallback_exercises(language, exercise_type)
+
             prompt = self._get_exercise_prompt(language, level, exercise_type)
             
             response = requests.post(

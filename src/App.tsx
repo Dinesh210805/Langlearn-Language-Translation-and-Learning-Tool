@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import TextTranslation from './pages/TextTranslation';
@@ -10,11 +11,21 @@ import Achievements from './pages/Achievements';
 import History from './pages/History';
 
 function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark' ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navbar />
-        <main className="container mx-auto px-4 py-8">
+      <div className="app-root min-h-screen">
+        <Navbar theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+        <main className="app-main">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/translate/text" element={<TextTranslation />} />

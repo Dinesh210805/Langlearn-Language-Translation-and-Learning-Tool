@@ -24,13 +24,12 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center rounded-full font-semibold transition-all";
+    "inline-flex items-center justify-center rounded-full font-semibold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 
   const variants = {
-    primary:
-      "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
-    outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-50",
+    primary: "app-button-primary",
+    secondary: "app-button-secondary",
+    outline: "app-button-outline",
   };
 
   const sizes = {

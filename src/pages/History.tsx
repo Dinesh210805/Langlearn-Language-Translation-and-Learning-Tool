@@ -4,6 +4,7 @@ import {
   Globe2,
   BookOpen,
   PenTool,
+  CalendarDays,
 } from "lucide-react";
 
 function History() {
@@ -35,46 +36,51 @@ function History() {
   ];
 
   return (
-    <motion.div
+    <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="max-w-4xl mx-auto"
+      className="page-shell page-stack"
     >
-      <div className="flex items-center gap-3 mb-8">
-        <HistoryIcon className="w-8 h-8 text-blue-600" />
-        <h1 className="text-3xl font-bold">Learning History</h1>
+      <div className="page-header split-header">
+        <div className="title-lockup">
+          <span className="section-icon">
+            <HistoryIcon className="w-6 h-6" />
+          </span>
+          <div>
+            <p className="eyebrow">Recent activity</p>
+            <h1>Learning History</h1>
+          </div>
+        </div>
+        <div className="header-note">
+          <CalendarDays className="w-4 h-4" />
+          <span>Review what you translated, studied, and practiced.</span>
+        </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="timeline-list">
         {activities.map((activity) => {
           const Icon = activity.icon;
           return (
             <motion.div
               key={activity.id}
-              whileHover={{ scale: 1.02 }}
-              className="p-4 bg-white rounded-lg shadow-sm border border-gray-200"
+              whileHover={{ x: 3 }}
+              className="timeline-item"
             >
-              <div className="flex items-start gap-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Icon className="w-5 h-5 text-blue-600" />
+              <div className="timeline-marker">
+                <Icon className="w-5 h-5" />
+              </div>
+              <div className="timeline-content">
+                <div>
+                  <h3>{activity.title}</h3>
+                  <p>{activity.description}</p>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {activity.title}
-                    </h3>
-                    <span className="text-sm text-gray-500">
-                      {activity.timestamp}
-                    </span>
-                  </div>
-                  <p className="text-gray-600 mt-1">{activity.description}</p>
-                </div>
+                <time>{activity.timestamp}</time>
               </div>
             </motion.div>
           );
         })}
       </div>
-    </motion.div>
+    </motion.section>
   );
 }
 

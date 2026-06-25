@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export function FloatingParticles() {
   return (
-    <div className="fixed inset-0 pointer-events-none">
+    <div className="floating-particles fixed inset-0 pointer-events-none">
       {[...Array(20)].map((_, i) => (
         <motion.div
           key={i}

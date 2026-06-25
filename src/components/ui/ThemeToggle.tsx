@@ -1,25 +1,29 @@
-import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export function ThemeToggle() {
-  const [isDark, setIsDark] = React.useState(false);
+interface ThemeToggleProps {
+  theme: "light" | "dark";
+  onToggle: () => void;
+}
 
+export function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
+  const isDark = theme === "dark";
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={() => setIsDark(!isDark)}
-      className="fixed top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-lg border border-gray-200/50"
+      onClick={onToggle}
+      className="theme-toggle"
+      aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
     >
       <motion.div
         initial={false}
         animate={{ rotate: isDark ? 360 : 0 }}
       >
         {isDark ? (
-          <Moon className="w-5 h-5 text-blue-600" />
+          <Moon className="w-4 h-4" />
         ) : (
-          <Sun className="w-5 h-5 text-orange-500" />
+          <Sun className="w-4 h-4" />
         )}
       </motion.div>
     </motion.button>

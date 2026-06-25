@@ -2,142 +2,179 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Globe2,
-  Mic,
+  ArrowRight,
   BookOpen,
-  PenTool,
+  Globe2,
+  History,
   MessageSquare,
+  Mic,
+  PenTool,
   Trophy,
 } from "lucide-react";
-import { Card } from "../components/ui/Card";
-import { GradientText } from "../components/ui/GradientText";
-import { FloatingParticles } from "../components/ui/FloatingParticles";
+
+const features = [
+  {
+    to: "/translate/text",
+    icon: Globe2,
+    title: "Translate",
+    description: "Text translation with grammar, examples, and usage context.",
+  },
+  {
+    to: "/translate/voice",
+    icon: Mic,
+    title: "Voice",
+    description: "Record speech, transcribe it, and translate the result.",
+  },
+  {
+    to: "/learn",
+    icon: BookOpen,
+    title: "Lessons",
+    description: "Structured language lessons with quizzes and summaries.",
+  },
+  {
+    to: "/practice",
+    icon: PenTool,
+    title: "Practice",
+    description: "Vocabulary, sentence building, and interactive exercises.",
+  },
+  {
+    to: "/chatbot",
+    icon: MessageSquare,
+    title: "Tutor",
+    description: "Ask questions and practice with an AI language coach.",
+  },
+  {
+    to: "/achievements",
+    icon: Trophy,
+    title: "Progress",
+    description: "Review achievements and your recent learning history.",
+  },
+];
+
+const metrics = [
+  { value: "11", label: "translation languages" },
+  { value: "8", label: "practice modes" },
+  { value: "AI", label: "guided explanations" },
+];
 
 function Home() {
   return (
-    <>
-      <FloatingParticles />
-      <div className="max-w-7xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16 relative"
-        >
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-3xl"
-          />
-          <h1 className="text-5xl text-white md:text-7xl font-bold mb-6 tracking-tight">
-            Master Any Language with{" "}
-            <GradientText>AI-Powered Learning</GradientText>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Your all-in-one platform for language learning. Translate, practice,
-            and achieve fluency with our interactive tools.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureCard
-            to="/translate/text"
-            icon={<Globe2 className="w-8 h-8" />}
-            title="Text Translation"
-            description="Translate text between multiple languages instantly"
-            gradient="from-blue-500 to-cyan-500"
-          />
-          <FeatureCard
-            to="/translate/voice"
-            icon={<Mic className="w-8 h-8" />}
-            title="Voice Translation"
-            description="Speak and hear translations in real-time"
-            gradient="from-purple-500 to-pink-500"
-          />
-          <FeatureCard
-            to="/learn"
-            icon={<BookOpen className="w-8 h-8" />}
-            title="Interactive Lessons"
-            description="Learn with structured, engaging content"
-            gradient="from-orange-500 to-red-500"
-          />
-          <FeatureCard
-            to="/practice"
-            icon={<PenTool className="w-8 h-8" />}
-            title="Practice Exercises"
-            description="Test your knowledge with quizzes and exercises"
-            gradient="from-green-500 to-emerald-500"
-          />
-          <FeatureCard
-            to="/chatbot"
-            icon={<MessageSquare className="w-8 h-8" />}
-            title="AI Language Tutor"
-            description="Get instant help from our AI language tutor"
-            gradient="from-violet-500 to-purple-500"
-          />
-          <FeatureCard
-            to="/achievements"
-            icon={<Trophy className="w-8 h-8" />}
-            title="Track Progress"
-            description="Earn achievements and track your learning journey"
-            gradient="from-yellow-500 to-orange-500"
-          />
+    <section className="home-page">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="home-hero"
+      >
+        <div className="hero-content">
+          <p className="eyebrow">Language study desk</p>
+          <h1>Translate once. Practice until it becomes yours.</h1>
+          <div className="hero-actions">
+            <Link to="/translate/text" className="primary-action">
+              Start translating
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link to="/practice" className="secondary-action">
+              Practice set
+              <PenTool className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
+        <div className="hero-panel" aria-label="Learning snapshot">
+          <div className="hero-panel-header">
+            <span>Today</span>
+            <span>A1 Spanish</span>
+          </div>
+          <div className="phrase-stack">
+            <span className="phrase-source">How are you?</span>
+            <span className="phrase-arrow">to</span>
+            <span className="phrase-target">¿Cómo estás?</span>
+          </div>
+          <p>
+            Grammar, pronunciation, examples, and culture stay attached to each
+            translation so a quick lookup can turn into a focused study session.
+          </p>
+          <div className="hero-mini-list">
+            <span>literal meaning</span>
+            <span>usage notes</span>
+            <span>practice tips</span>
+          </div>
+        </div>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-20 text-center"
-        >
-          <Link
-            to="/learn"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all hover:gap-4"
-          >
-            Start Learning Now
-            <motion.span
-              animate={{ x: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            >
-              →
-            </motion.span>
-          </Link>
-        </motion.div>
+      <div className="metric-strip">
+        {metrics.map((metric) => (
+          <div key={metric.label} className="metric-item">
+            <strong>{metric.value}</strong>
+            <span>{metric.label}</span>
+          </div>
+        ))}
       </div>
-    </>
+
+      <div className="feature-grid">
+        {features.map((feature, index) => (
+          <FeatureCard key={feature.to} index={index} {...feature} />
+        ))}
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="study-flow"
+      >
+        <div>
+          <p className="eyebrow">One loop, three moves</p>
+          <h2>Move from answer to understanding.</h2>
+        </div>
+        <div className="flow-steps">
+          <Link to="/translate/text" className="flow-step">
+            <Globe2 className="w-5 h-5" />
+            <span>Translate</span>
+          </Link>
+          <Link to="/learn" className="flow-step">
+            <BookOpen className="w-5 h-5" />
+            <span>Study</span>
+          </Link>
+          <Link to="/history" className="flow-step">
+            <History className="w-5 h-5" />
+            <span>Review</span>
+          </Link>
+        </div>
+      </motion.div>
+    </section>
   );
 }
 
 interface FeatureCardProps {
   to: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
-  gradient: string;
+  index: number;
 }
 
 function FeatureCard({
   to,
-  icon,
+  icon: Icon,
   title,
   description,
-  gradient,
+  index,
 }: FeatureCardProps) {
   return (
-    <Card className="group relative overflow-hidden">
-      <Link to={to} className="block p-6">
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity`}
-        />
-        <div className="relative">
-          <div className="text-blue-600 mb-4 transform group-hover:scale-110 transition-transform">
-            {icon}
-          </div>
-          <h3 className="text-xl font-semibold mb-2">{title}</h3>
-          <p className="text-gray-500">{description}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.05 * index }}
+    >
+      <Link to={to} className="feature-card">
+        <div className="feature-card-top">
+          <Icon className="w-5 h-5" />
+          <span>{String(index + 1).padStart(2, "0")}</span>
         </div>
+        <h2>{title}</h2>
+        <p>{description}</p>
       </Link>
-    </Card>
+    </motion.div>
   );
 }
 
